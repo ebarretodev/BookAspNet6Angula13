@@ -1,6 +1,3 @@
-
-
-
 # ASP.NET-Core-6-and-Angular
 Code Repository for ASP.NET Core 6 and Angular, Fifth Edition published by Packt
 
@@ -27,3 +24,5 @@ By the end of this web development book, you will understand how to tie together
 8. Learn to develop fast and flexible Web APIs using GraphQL
 9. Add real-time capabilities to Angular apps with ASP.NET Core SignalR
 
+## Branchs are chapters
+The exercises can finded on different branchs.
