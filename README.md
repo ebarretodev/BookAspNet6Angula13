@@ -26,3 +26,5 @@ By the end of this web development book, you will understand how to tie together
 
 ## Branchs are chapters
 The exercises can finded on different branchs.
+
+Access the chapter branch to make editions and run the functions.
