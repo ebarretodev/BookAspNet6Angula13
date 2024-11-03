@@ -12,23 +12,25 @@
     "docker:build": "docker build -t health-check-front-image .",
     "docker:run": "docker run -d -p 4200:80 -p 4203:443 --name health-check-front health-check-front-image",
     "docker:stop": "docker stop health-check-front && docker rm health-check-front",
-    "docker:start":"npm run docker:build && npm run docker:run && npx open-cli https://localhost:4203",
+    "docker:start": "npm run docker:build && npm run docker:run && npx open-cli https://localhost:4203",
     "docker:rebuild": "npm run docker:stop && npm run docker:build && npm run docker:run"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "~13.0.0",
+    "@angular/cdk": "^13.0.1",
     "@angular/common": "~13.0.0",
     "@angular/compiler": "~13.0.0",
     "@angular/core": "~13.0.0",
     "@angular/forms": "~13.0.0",
+    "@angular/material": "^13.0.1",
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
+    "jest-editor-support": "*",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4",
-    "jest-editor-support": "*"
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.0.1",
