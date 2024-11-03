@@ -7,13 +7,15 @@ import { HomeComponent } from './features/home/home.component';
 import { FetchDataComponent } from './features/fetch-data/fetch-data.component';
 import { NavMenuComponent } from './core/components/nav-menu/nav-menu.component';
 import { AppRoutingModule } from './app-routing.module';
+import { HealthCheckComponent } from './features/health-check/health-check.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     FetchDataComponent,
-    NavMenuComponent
+    NavMenuComponent,
+    HealthCheckComponent
   ],
   imports: [
     BrowserModule, HttpClientModule, AppRoutingModule
