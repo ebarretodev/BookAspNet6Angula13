@@ -4,10 +4,16 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --ssl --ssl-cert %APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem --ssl-key %APPDATA%\\ASP.NET\\https\\%npm_package_name%.key",
+    "startSsl": "ng serve --ssl --ssl-cert ./ssl/server.crt --ssl-key ./ssl/server.key",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "prestart": "node aspnetcore-https"
+    "prestart": "node aspnetcore-https",
+    "docker:build": "docker build -t health-check-front-image .",
+    "docker:run": "docker run -d -p 4200:80 -p 4203:443 --name health-check-front health-check-front-image",
+    "docker:stop": "docker stop health-check-front && docker rm health-check-front",
+    "docker:start":"npm run docker:build && npm run docker:run && npx open-cli https://localhost:4203",
+    "docker:rebuild": "npm run docker:stop && npm run docker:build && npm run docker:run"
   },
   "private": true,
   "dependencies": {
