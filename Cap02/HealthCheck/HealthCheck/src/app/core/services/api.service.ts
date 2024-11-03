@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { WeatherForecast } from 'src/app/share/models/weather-forecast.model';
 import { environment } from 'src/environments/environment';
-import { WeatherForecast } from '../models/weather-forecast.model';
 
 
 @Injectable({
