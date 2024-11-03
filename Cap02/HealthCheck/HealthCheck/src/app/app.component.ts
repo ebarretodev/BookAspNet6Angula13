@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { ApiService } from './services/api.service';
+import { WeatherForecast } from './models/weather-forecast.model';
 
 @Component({
   selector: 'app-root',
@@ -7,20 +9,20 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  public forecasts?: WeatherForecast[];
+  public forecasts?: WeatherForecast[] = [];
+  
+  constructor(private apiService: ApiService) {}
 
-  constructor(http: HttpClient) {
-    http.get<WeatherForecast[]>('/weatherforecast').subscribe(result => {
-      this.forecasts = result;
-    }, error => console.error(error));
+  ngOnInit() {
+    this.apiService.getData().subscribe(
+      response => {
+        this.forecasts = response
+      }, 
+      error => {
+        console.error('Erro ao buscar dados:', error);
+      })
   }
 
   title = 'HealthCheck';
 }
 
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
