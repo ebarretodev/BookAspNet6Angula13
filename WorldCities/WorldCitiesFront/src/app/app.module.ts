@@ -9,20 +9,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { HomeComponent } from './core/cfeature/home/home.component';
+import { CitiesComponent } from './core/cfeature/cities/cities.component';
+import { HttpClientModule } from '@angular/common/http';
+import { AngularMaterialModule } from './angular-material.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
-    HomeComponent
+    HomeComponent,
+    CitiesComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatButtonModule, 
-    MatIconModule,
-    MatToolbarModule
+    AngularMaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
