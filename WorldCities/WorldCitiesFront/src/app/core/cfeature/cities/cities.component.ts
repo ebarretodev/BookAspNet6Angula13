@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { City } from 'src/app/models/city';
 import { ApiService } from 'src/app/services/api.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-cities',
@@ -18,12 +18,22 @@ export class CitiesComponent implements OnInit {
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.apiService.getCities().subscribe({
-      next: (response: City[])=>{
-        this.cities = new MatTableDataSource<City>(response)
-        this.cities.paginator = this.paginator
+    var pageEvent = new PageEvent();
+    pageEvent.pageIndex = 0;
+    pageEvent.pageSize = 10;
+    this.getData(pageEvent)
+    
+  }
+
+  getData(event: PageEvent){
+    this.apiService.getCities(event).subscribe({
+      next: (response) => {
+        this.paginator.length = response.totalCount
+        this.paginator.pageIndex = response.pageIndex;
+        this.paginator.pageSize = response.pageSize;
+        this.cities = new MatTableDataSource<City>(response.data)
       },
-      error: (error: any)=>{
+      error: (error: any) => {
         console.error('Erro ao buscar dados:', error)
       }
     })
