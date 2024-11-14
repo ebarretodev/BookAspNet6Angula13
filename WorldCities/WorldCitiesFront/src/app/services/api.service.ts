@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Sort } from '../models/city';
+import { Params } from '../models/city';
 import { PageEvent } from '@angular/material/paginator';
 
 @Injectable({
@@ -14,13 +14,32 @@ export class ApiService {
     this.apiUrl = environment.apiUrl;
   }
 
-  getCities(event: PageEvent, sort: Sort ) {
-    var url = `${this.apiUrl}/Cities`
-    var params = new HttpParams()
+  getCities(event: PageEvent, paramsReceived: Params) {
+    let url = `${this.apiUrl}/Cities`;
+    let params = new HttpParams()
       .set("pageIndex", event.pageIndex.toString())
-      .set("pageSize", event.pageSize.toString())
-      .set("sortColumn", sort.sortColumn)
-      .set("sortOrder", sort.sortOrder)
-    return this.http.get<any>(url, { params })
-  }
+      .set("pageSize", event.pageSize.toString());
+
+    // Adiciona parâmetros de ordenação se estiverem presentes
+    if (paramsReceived.sortValues) {
+      params = params
+        .set("sortColumn", paramsReceived.sortValues.sortColumn)
+        .set("sortOrder", paramsReceived.sortValues.sortOrder);
+    }
+
+    // Adiciona parâmetros de filtro se estiverem presentes
+    if (paramsReceived.filtersValues) {
+      if (paramsReceived.filtersValues.filterColumn) {
+        params = params.set("filterColumn", paramsReceived.filtersValues.filterColumn);
+      }
+      if (paramsReceived.filtersValues.filterQuery) {
+        params = params.set("filterQuery", paramsReceived.filtersValues.filterQuery);
+      }
+    }
+
+    return this.http.get<any>(url, { params });
+}
+
+
+
 }
