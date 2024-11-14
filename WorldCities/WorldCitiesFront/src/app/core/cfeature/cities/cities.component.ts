@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { City } from 'src/app/models/city';
+import { City, Sort } from 'src/app/models/city';
 import { ApiService } from 'src/app/services/api.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-cities',
@@ -13,20 +14,35 @@ export class CitiesComponent implements OnInit {
   public displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
   public cities!: MatTableDataSource<City>;
 
+  defaultPageIndex: number = 0
+  defaultPageSize: number = 10
+  public defaultSortColumn: string = "name"
+  public defaultSortOrder: "asc" | "desc" = "asc"
+
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort
 
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
+   
+    this.loadData()
+  }
+
+  loadData(){
     var pageEvent = new PageEvent();
-    pageEvent.pageIndex = 0;
-    pageEvent.pageSize = 10;
+    pageEvent.pageIndex = this.defaultPageIndex;
+    pageEvent.pageSize = this.defaultPageSize;
     this.getData(pageEvent)
-    
   }
 
   getData(event: PageEvent){
-    this.apiService.getCities(event).subscribe({
+    var sort: Sort = {
+      sortColumn: (this.sort) ? this.sort.active : this.defaultSortColumn ,
+      sortOrder: (this.sort) ? (this.sort.direction as 'asc' | 'desc') : this.defaultSortOrder      
+    }
+    this.apiService.getCities(event, sort).subscribe({
       next: (response) => {
         this.paginator.length = response.totalCount
         this.paginator.pageIndex = response.pageIndex;

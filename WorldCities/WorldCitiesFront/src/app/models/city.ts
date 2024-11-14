@@ -4,3 +4,8 @@ export interface City {
     lat: number;
     lon: number;
 }
+
+export interface Sort {
+    sortColumn: string,
+    sortOrder: 'asc' | 'desc'
+}

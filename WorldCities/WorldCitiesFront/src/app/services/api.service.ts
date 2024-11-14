@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { City } from '../models/city';
+import { Sort } from '../models/city';
 import { PageEvent } from '@angular/material/paginator';
 
 @Injectable({
@@ -14,11 +14,13 @@ export class ApiService {
     this.apiUrl = environment.apiUrl;
   }
 
-  getCities(event: PageEvent) {
+  getCities(event: PageEvent, sort: Sort ) {
     var url = `${this.apiUrl}/Cities`
     var params = new HttpParams()
       .set("pageIndex", event.pageIndex.toString())
       .set("pageSize", event.pageSize.toString())
+      .set("sortColumn", sort.sortColumn)
+      .set("sortOrder", sort.sortOrder)
     return this.http.get<any>(url, { params })
   }
 }
