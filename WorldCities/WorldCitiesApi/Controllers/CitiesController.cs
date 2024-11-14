@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesApi.Data;
 using WorldCitiesApi.Data.Models;
@@ -29,15 +24,20 @@ namespace WorldCitiesAPI.Controllers
             int pageIndex = 0,
             int pageSize = 10,
             string? sortColumn = null,
-            string? sortOrder = null
+            string? sortOrder = null,
+            string? filterColumn = null,
+            string? filterQuery = null
             )
         {
+            
             return await ApiResult<City>.CreateAsync(
                 _context.Cities.AsNoTracking(),
                 pageIndex,
                 pageSize,
                 sortColumn,
-                sortOrder
+                sortOrder,
+                filterColumn,
+                filterQuery
                 );
         }
 
