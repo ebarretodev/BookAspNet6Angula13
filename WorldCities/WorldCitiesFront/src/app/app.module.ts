@@ -9,13 +9,15 @@ import { HomeComponent } from './core/cfeature/home/home.component';
 import { CitiesComponent } from './core/cfeature/cities/cities.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularMaterialModule } from './angular-material.module';
+import { CountriesComponent } from './core/cfeature/countries/countries.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CitiesComponent
+    CitiesComponent,
+    CountriesComponent
   ],
   imports: [
     BrowserModule,
