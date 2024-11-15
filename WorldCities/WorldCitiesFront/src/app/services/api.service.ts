@@ -50,4 +50,9 @@ export class ApiService {
     return this.http.put<any>(url, data)
   }
 
+  insertDataById(dataType: string, data: any){
+    let url = `${this.apiUrl}/${dataType}`;
+    return this.http.post<any>(url, data)
+  }
+
 }
