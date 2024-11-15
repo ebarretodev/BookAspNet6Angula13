@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { City } from 'src/app/models/city';
+import { ApiService } from 'src/app/services/api.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -22,7 +22,7 @@ export class CityEditComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private apiService: ApiService
   ) { }
 
   ngOnInit(): void {
@@ -41,15 +41,17 @@ export class CityEditComponent implements OnInit {
     var idParam = this.activatedRoute.snapshot.paramMap.get('id');
     var id = idParam ? +idParam : 0;
 
-    // fetch the city from the server
-    var url = environment.apiUrl + '/Cities/' + id;
-    this.http.get<City>(url).subscribe(result => {
-      this.city = result;
-      this.title = "Edit - " + this.city.name;
-
-      // update the form with the city value
-      this.form.patchValue(this.city);
-    }, error => console.error(error));
+    this.apiService.getDataById('Cities', id).subscribe(
+      {
+        next: (response: City) => {
+          this.city = response
+          this.title = "Edit - " + this.city.name
+          // update the form with the city value
+          this.form.patchValue(this.city)
+        },
+        error: (error: any) => console.error("Erro ao buscar dados: ", error)
+      }
+    )
   }
 
   onSubmit() {
@@ -59,13 +61,16 @@ export class CityEditComponent implements OnInit {
       city.lat = +this.form.controls['lat'].value;
       city.lon = +this.form.controls['lon'].value;
       var url = environment.apiUrl + 'api/Cities/' + city.id;
-      this.http
-        .put<City>(url, city)
-        .subscribe(result => {
-          console.log("City " + city!.id + " has been updated.");
-          // go back to cities view
-          this.router.navigate(['/cities']);
-        }, error => console.error(error));
+
+      this.apiService
+        .editDataById('Cities', city)
+        .subscribe({
+          next: (response) => {
+            console.log(`Cidade ${city?.id} atualizada`)
+            this.router.navigate(['/cities'])
+          }, 
+          error: (error) => console.error("Erro ao editar cidade: ", error)
+        })
     }
   }
 

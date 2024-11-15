@@ -40,4 +40,14 @@ export class ApiService {
     return this.http.get<any>(url, { params });
   }
 
+  getDataById(dataType: string, id: number){
+    let url = `${this.apiUrl}/${dataType}/${id}`;
+    return this.http.get<any>(url)
+  }
+
+  editDataById(dataType: string, data: any){
+    let url = `${this.apiUrl}/${dataType}/${data.id}`;
+    return this.http.put<any>(url, data)
+  }
+
 }
