@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Params } from '../models/city';
+import { Params } from '../models/params';
 import { PageEvent } from '@angular/material/paginator';
 
 @Injectable({
@@ -14,8 +14,8 @@ export class ApiService {
     this.apiUrl = environment.apiUrl;
   }
 
-  getCities(event: PageEvent, paramsReceived: Params) {
-    let url = `${this.apiUrl}/Cities`;
+  getData(dataType: string, event: PageEvent, paramsReceived: Params) {
+    let url = `${this.apiUrl}/${dataType}`;
     let params = new HttpParams()
       .set("pageIndex", event.pageIndex.toString())
       .set("pageSize", event.pageSize.toString());
@@ -38,8 +38,6 @@ export class ApiService {
     }
 
     return this.http.get<any>(url, { params });
-}
-
-
+  }
 
 }

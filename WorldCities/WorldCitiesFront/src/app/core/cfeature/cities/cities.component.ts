@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { City, Filter, Params, Sort } from 'src/app/models/city';
+import { Params } from 'src/app/models/params';
 import { ApiService } from 'src/app/services/api.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { City } from 'src/app/models/city';
 
 @Component({
   selector: 'app-cities',
@@ -50,13 +51,6 @@ export class CitiesComponent implements OnInit {
       }
     }
 
-    
-
-    var filterParams: Filter = {
-
-      filterColumn: this.defaultFilterColumn,
-    }
-
     if (this.filterQuery) {
       this.paramsToSend = {
         ...this.paramsToSend,
@@ -67,7 +61,7 @@ export class CitiesComponent implements OnInit {
       }
     }
 
-    this.apiService.getCities(event, this.paramsToSend).subscribe({
+    this.apiService.getData('Cities', event, this.paramsToSend).subscribe({
       next: (response) => {
         this.paginator.length = response.totalCount
         this.paginator.pageIndex = response.pageIndex;
