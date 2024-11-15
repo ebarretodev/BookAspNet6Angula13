@@ -10,6 +10,8 @@ import { CitiesComponent } from './core/cfeature/cities/cities.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularMaterialModule } from './angular-material.module';
 import { CountriesComponent } from './core/cfeature/countries/countries.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CityEditComponent } from './core/cfeature/city-edit/city-edit.component';
 
 @NgModule({
   declarations: [
@@ -17,14 +19,16 @@ import { CountriesComponent } from './core/cfeature/countries/countries.componen
     NavMenuComponent,
     HomeComponent,
     CitiesComponent,
-    CountriesComponent
+    CountriesComponent,
+    CityEditComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    AngularMaterialModule
+    AngularMaterialModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
