@@ -56,6 +56,7 @@ export class CountriesComponent implements OnInit {
 
   getData(event: PageEvent) {
     this.paramsToSend = {
+      pageEvent: event,
       sortValues: {
         sortColumn: (this.sort) ? this.sort.active : this.defaultSortColumn,
         sortOrder: (this.sort) ? (this.sort.direction as 'asc' | 'desc') : this.defaultSortOrder
@@ -72,8 +73,9 @@ export class CountriesComponent implements OnInit {
       }
     }
 
-    this.apiService.getData('Countries', event, this.paramsToSend).subscribe({
-      next: (response) => {
+    this.apiService.getData('Countries', this.paramsToSend)
+    .subscribe({
+      next: (response: any) => {
         this.paginator.length = response.totalCount
         this.paginator.pageIndex = response.pageIndex;
         this.paginator.pageSize = response.pageSize;

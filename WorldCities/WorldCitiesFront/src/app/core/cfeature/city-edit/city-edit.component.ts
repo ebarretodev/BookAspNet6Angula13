@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators'
 import { City } from 'src/app/models/city';
 import { Country } from 'src/app/models/country';
+import { Params } from 'src/app/models/params';
 import { ApiService } from 'src/app/services/api.service';
 import { environment } from 'src/environments/environment';
 
@@ -82,18 +83,25 @@ export class CityEditComponent implements OnInit {
 
   loadCountries() {
     // fetch all the countries from the server
-    var url = environment.apiUrl + '/Countries';
-    var params = new HttpParams()
-      .set("pageIndex", "0")
-      .set("pageSize", "9999")
-      .set("sortColumn", "name")
-    this.http.get<any>(url, { params }).subscribe(result => {
-      this.countries = result.data;
-    }, error => console.error(error));
+    let url = environment.apiUrl + '/Countries';
+    let params: Params = {
+      pageEvent: {
+        pageIndex: 0,
+        pageSize: 9999
+      },
+      sortValues: {
+        sortColumn: "name"
+      }
+    }
+    
+    this.apiService.getData('Countries', params).subscribe({
+      next: (response: any) => this.countries = response.data,
+      error: (error: any) => console.error(`Erro no fecth do Countries: ${error}`)
+    })
   }
 
   onSubmit() {
-    var city = (this.city) ? this.city : <City>{};
+    let city = (this.city) ? this.city : <City>{};
     if (city) {
       city.name = this.form.controls['name'].value;
       city.lat = +this.form.controls['lat'].value;

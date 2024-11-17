@@ -14,17 +14,22 @@ export class ApiService {
     this.apiUrl = environment.apiUrl;
   }
 
-  getData(dataType: string, event: PageEvent, paramsReceived: Params) {
+  getData(dataType: string, paramsReceived: Params) {
     let url = `${this.apiUrl}/${dataType}`;
     let params = new HttpParams()
       .set("pageIndex", event.pageIndex.toString())
       .set("pageSize", event.pageSize.toString());
 
+    if (paramsReceived.pageEvent) {
+      params = params
+        .set("pageIndex", paramsReceived.pageEvent.pageIndex.toString())
+        .set("pageSize", paramsReceived.pageEvent.pageSize.toString());
+    }
     // Adiciona parâmetros de ordenação se estiverem presentes
     if (paramsReceived.sortValues) {
       params = params
         .set("sortColumn", paramsReceived.sortValues.sortColumn)
-        .set("sortOrder", paramsReceived.sortValues.sortOrder);
+        .set("sortOrder", paramsReceived.sortValues.sortOrder || 'asc');
     }
 
     // Adiciona parâmetros de filtro se estiverem presentes
