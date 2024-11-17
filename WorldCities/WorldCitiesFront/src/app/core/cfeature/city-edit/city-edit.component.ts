@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { debounceTime, map, switchMap } from 'rxjs/operators'
 import { City } from 'src/app/models/city';
 import { Country } from 'src/app/models/country';
 import { ApiService } from 'src/app/services/api.service';
@@ -127,20 +127,27 @@ export class CityEditComponent implements OnInit {
   }
 
   isDupeCity(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<{ [key: string]: any } |
-      null> => {
-      var city = <City>{};
-      city.id = (this.id) ? this.id : 0;
-      city.name = this.form.controls['name'].value;
-      city.lat = +this.form.controls['lat'].value;
-      city.lon = +this.form.controls['lon'].value;
-      city.countryId = +this.form.controls['countryId'].value;
-      var url = environment.apiUrl + '/Cities/IsDupeCity';
-      return this.http
-        .post<boolean>(url, city)
-        .pipe(map(result => {
-          return (result ? { isDupeCity: true } : null);
-        }));
-    }
+    return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+      return control.valueChanges.pipe(
+        debounceTime(1000), // Debounce user input
+        map(() => {
+          var city = <City>{};
+          city.id = (this.id) ? this.id : 0;
+          city.name = this.form.controls['name'].value;
+          city.lat = +this.form.controls['lat'].value;
+          city.lon = +this.form.controls['lon'].value;
+          city.countryId = +this.form.controls['countryId'].value;
+
+          var url = environment.apiUrl + '/Cities/IsDupeCity';
+          return { url, city };
+        }),
+        // Fetch from backend only after debounce
+        switchMap(({ url, city }) => {
+          return this.http.post<boolean>(url, city).pipe(
+            map(result => (result ? { isDupeCity: true } : null))
+          );
+        })
+      );
+    };
   }
 }
