@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { Params } from 'src/app/models/params';
 import { ApiService } from 'src/app/services/api.service';
 import { MatTableDataSource } from '@angular/material/table';
@@ -12,7 +12,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   templateUrl: './cities.component.html',
   styleUrls: ['./cities.component.scss']
 })
-export class CitiesComponent implements OnInit {
+export class CitiesComponent implements AfterViewInit {
   public displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
   public cities!: MatTableDataSource<City>;
 
@@ -32,9 +32,8 @@ export class CitiesComponent implements OnInit {
   filterTextChanged: Subject<string> = new Subject<string>()
 
   constructor(private apiService: ApiService) { }
-
-  ngOnInit(): void {
-
+ 
+  ngAfterViewInit(){
     this.loadData()
   }
 

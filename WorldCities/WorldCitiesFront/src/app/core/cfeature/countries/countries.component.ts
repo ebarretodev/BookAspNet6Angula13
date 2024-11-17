@@ -1,18 +1,18 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Params } from 'src/app/models/params';
 import { Country } from 'src/app/models/country';
 import { ApiService } from 'src/app/services/api.service';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-countries',
   templateUrl: './countries.component.html',
   styleUrls: ['./countries.component.scss']
 })
-export class CountriesComponent implements OnInit {
+export class CountriesComponent implements AfterViewInit {
   public displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3']
   public countries!: MatTableDataSource<Country>
   defaultPageIndex: number = 0;
@@ -30,7 +30,7 @@ export class CountriesComponent implements OnInit {
 
   constructor(private apiService: ApiService) { }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.loadData()
   }
 
@@ -74,6 +74,9 @@ export class CountriesComponent implements OnInit {
     }
 
     this.apiService.getData('Countries', this.paramsToSend)
+    .pipe(
+      delay(0)
+    )
     .subscribe({
       next: (response: any) => {
         this.paginator.length = response.totalCount
