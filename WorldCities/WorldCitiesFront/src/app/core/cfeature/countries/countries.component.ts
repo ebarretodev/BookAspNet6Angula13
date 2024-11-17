@@ -5,6 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Params } from 'src/app/models/params';
 import { Country } from 'src/app/models/country';
 import { ApiService } from 'src/app/services/api.service';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-countries',
@@ -25,10 +26,24 @@ export class CountriesComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  filterTextChanged: Subject<string> = new Subject<string>()
+
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.loadData()
+  }
+
+  // debounce filter text changes
+  onFilterTextChanged(filterText: string) {
+    if (this.filterTextChanged.observers.length === 0) {
+      this.filterTextChanged
+        .pipe(debounceTime(1000), distinctUntilChanged())
+        .subscribe(query => {
+          this.loadData(query);
+        });
+    }
+    this.filterTextChanged.next(filterText);
   }
 
   loadData(query?: string) {
@@ -50,7 +65,7 @@ export class CountriesComponent implements OnInit {
     if (this.filterQuery) {
       this.paramsToSend = {
         ...this.paramsToSend,
-        filtersValues:{
+        filtersValues: {
           filterColumn: this.defaultFilterColumn,
           filterQuery: this.filterQuery
         }
