@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Params } from '../models/params';
-import { PageEvent } from '@angular/material/paginator';
+import { delay, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +15,29 @@ export class ApiService {
   }
 
   getData(dataType: string, paramsReceived: Params) {
+
+    // Gera a chave de cache com base no tipo de dados e nos parâmetros.
+    const cacheKey = `${dataType}_${JSON.stringify(paramsReceived)}`;
+    const cachedData = localStorage.getItem(cacheKey);
+
+
+    if (cachedData) {
+      const currentTime = new Date().getTime()
+      const cacheExpiryTime = 3600000; // 1 hora em milissegundos (3600 * 1000)
+      const data = JSON.parse(cachedData)
+
+      if (currentTime - data.timestamp < cacheExpiryTime) {
+        console.log('Cache ainda válido');
+        // Se os dados estiverem no localStorage, retorne os dados em cache.
+        return of(data.response);  // Retorna os dados como um Observable.
+      } else {
+        console.log('Cache expirado');
+        localStorage.removeItem('cacheTimestamp');
+      }
+    }
+
     let url = `${this.apiUrl}/${dataType}`;
     let params = new HttpParams()
-      .set("pageIndex", event.pageIndex.toString())
-      .set("pageSize", event.pageSize.toString());
 
     if (paramsReceived.pageEvent) {
       params = params
@@ -42,22 +61,38 @@ export class ApiService {
       }
     }
 
-    return this.http.get<any>(url, { params });
+    return this.http.get<any>(url, { params }).pipe(
+      tap(response => {
+        let dataToCache = {
+          response,
+          timestamp: new Date().getTime()
+        }
+        localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
+        console.log(`Dados armazenados no cache.`);
+      })
+    );
   }
 
-  getDataById(dataType: string, id: number){
+  getDataById(dataType: string, id: number) {
     let url = `${this.apiUrl}/${dataType}/${id}`;
     return this.http.get<any>(url)
   }
 
-  editDataById(dataType: string, data: any){
+  editDataById(dataType: string, data: any) {
     let url = `${this.apiUrl}/${dataType}/${data.id}`;
+    this.clearCache()
     return this.http.put<any>(url, data)
   }
 
-  insertDataById(dataType: string, data: any){
+  insertDataById(dataType: string, data: any) {
     let url = `${this.apiUrl}/${dataType}`;
+    this.clearCache()
     return this.http.post<any>(url, data)
+  }
+
+  clearCache() {
+    localStorage.clear(); // Limpa todos os itens do localStorage
+    console.log('Cache limpo');
   }
 
 }
