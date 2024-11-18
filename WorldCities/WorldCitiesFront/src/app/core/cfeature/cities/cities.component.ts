@@ -13,7 +13,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   styleUrls: ['./cities.component.scss']
 })
 export class CitiesComponent implements AfterViewInit {
-  public displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
+  public displayedColumns: string[] = ['id', 'name', 'lat', 'lon', 'countryName'];
   public cities!: MatTableDataSource<City>;
 
   defaultPageIndex: number = 0
