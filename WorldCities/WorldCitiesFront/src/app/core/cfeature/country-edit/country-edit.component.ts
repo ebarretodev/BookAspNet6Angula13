@@ -2,20 +2,21 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { debounceTime, map, Observable, switchMap } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, map, Observable, of, switchMap } from 'rxjs';
 import { Country } from 'src/app/models/country';
 import { environment } from 'src/environments/environment';
+import { BaseFormComponent } from '../../components/base-form.component';
 
 @Component({
   selector: 'app-country-edit',
   templateUrl: './country-edit.component.html',
   styleUrls: ['./country-edit.component.scss']
 })
-export class CountryEditComponent implements OnInit {
+export class CountryEditComponent extends BaseFormComponent implements OnInit {
   // the view title
   title?: string;
   // the form model
-  form!: FormGroup;
+  //form!: FormGroup;
   // the country object to edit or create
   country?: Country;
   // the country object id, as fetched from the active route:
@@ -30,7 +31,9 @@ export class CountryEditComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private http: HttpClient
-  ) { }
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -99,33 +102,24 @@ export class CountryEditComponent implements OnInit {
     }
   }
 
+
   isDupeField(fieldName: string): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
-      return control.valueChanges.pipe(
-        debounceTime(1000), // Adiciona um atraso de 300ms após o usuário parar de digitar
-        map(value => {
-          // Se o valor estiver vazio, não faz a requisição
-          if (!value) {
-            return null;
-          }
-          return value;
-        }),
-        switchMap(value => {
-          // Configura os parâmetros da requisição
-          const params = new HttpParams()
+    return (control: AbstractControl): Observable<{
+      [key: string]: any
+    } | null> => {
+
+      var params = new HttpParams()
             .set("countryId", (this.id) ? this.id.toString() : "0")
             .set("fieldName", fieldName)
-            .set("fieldValue", value);
-          const url = `${environment.apiUrl}/Countries/IsDupeField`;
-  
-          // Faz a requisição ao backend
-          return this.http.post<boolean>(url, null, { params }).pipe(
-            map(isDuplicate => {
-              return isDuplicate ? { isDupeField: true } : null;
-            })
-          );
-        })
-      );
-    };
+        .set("fieldValue", control.value);
+      var url = environment.apiUrl + '/Countries/IsDupeField';
+      return this.http.post<boolean>(url, null, { params })
+        .pipe(map(result => {
+          return (result ? { isDupeField: true } : null);
+        }));
+    }
   }
+
+
+
 }

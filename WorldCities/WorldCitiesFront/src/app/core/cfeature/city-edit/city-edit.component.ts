@@ -9,18 +9,19 @@ import { Country } from 'src/app/models/country';
 import { Params } from 'src/app/models/params';
 import { ApiService } from 'src/app/services/api.service';
 import { environment } from 'src/environments/environment';
+import { BaseFormComponent } from '../../components/base-form.component';
 
 @Component({
   selector: 'app-city-edit',
   templateUrl: './city-edit.component.html',
   styleUrls: ['./city-edit.component.scss']
 })
-export class CityEditComponent implements OnInit {
+export class CityEditComponent extends BaseFormComponent implements OnInit {
 
   // the view title
   title?: string;
   // the form model
-  form!: FormGroup;
+  //form!: FormGroup;
   // the city object to edit or create
   city?: City;
 
@@ -37,13 +38,15 @@ export class CityEditComponent implements OnInit {
     private router: Router,
     private apiService: ApiService,
     private http: HttpClient
-  ) { }
+  ) { 
+    super()
+  }
 
   ngOnInit(): void {
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
-      lat: new FormControl('', Validators.required),
-      lon: new FormControl('', Validators.required),
+      lat: new FormControl('', [Validators.required, Validators.pattern(/^[-]?[0-9]+(\.[0-9]{1,4})?$/)]),
+      lon: new FormControl('', [Validators.required, Validators.pattern(/^[-]?[0-9]+(\.[0-9]{1,4})?$/)]),
       countryId: new FormControl('', Validators.required)
 
     }, null, this.isDupeCity())
@@ -136,26 +139,19 @@ export class CityEditComponent implements OnInit {
 
   isDupeCity(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
-      return control.valueChanges.pipe(
-        debounceTime(1000), // Debounce user input
-        map(() => {
-          var city = <City>{};
-          city.id = (this.id) ? this.id : 0;
-          city.name = this.form.controls['name'].value;
-          city.lat = +this.form.controls['lat'].value;
-          city.lon = +this.form.controls['lon'].value;
-          city.countryId = +this.form.controls['countryId'].value;
 
-          var url = environment.apiUrl + '/Cities/IsDupeCity';
-          return { url, city };
-        }),
-        // Fetch from backend only after debounce
-        switchMap(({ url, city }) => {
-          return this.http.post<boolean>(url, city).pipe(
-            map(result => (result ? { isDupeCity: true } : null))
-          );
-        })
-      );
-    };
+      var city = <City>{};
+      city.id = (this.id) ? this.id : 0;
+      city.name = this.form.controls['name'].value;
+      city.lat = +this.form.controls['lat'].value;
+      city.lon = +this.form.controls['lon'].value;
+      city.countryId = +this.form.controls['countryId'].value;
+
+      var url = environment.apiUrl + '/Cities/IsDupeCity';
+      return this.http.post<boolean>(url, city).pipe(map(result => {
+
+        return (result ? { isDupeCity: true } : null);
+      }));
+    }
   }
 }
