@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { Params } from 'src/app/models/params';
 import { ApiService } from 'src/app/services/api.service';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,7 +10,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 @Component({
   selector: 'app-cities',
   templateUrl: './cities.component.html',
-  styleUrls: ['./cities.component.scss']
+  styleUrls: ['./cities.component.scss'],
 })
 export class CitiesComponent implements AfterViewInit {
   public displayedColumns: string[] = ['id', 'name', 'lat', 'lon', 'countryName'];
@@ -31,7 +31,7 @@ export class CitiesComponent implements AfterViewInit {
 
   filterTextChanged: Subject<string> = new Subject<string>()
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) { }
  
   ngAfterViewInit(){
     this.loadData()
@@ -55,6 +55,7 @@ export class CitiesComponent implements AfterViewInit {
     pageEvent.pageSize = this.defaultPageSize;
     this.filterQuery = query;
     this.getData(pageEvent)
+    this.cdr.detectChanges();
   }
 
   getData(event: PageEvent) {
