@@ -1,65 +1,110 @@
 <div class="city-edit">
-    <h1>{{title}}</h1>
-    <p *ngIf="this.id && !city"><em>Loading…</em></p>
-    <div [formGroup]="form" (ngSubmit)="onSubmit()">
+  <h1>{{ title }}</h1>
+  <p *ngIf="this.id && !city"><em>Loading…</em></p>
+  <div [formGroup]="form" (ngSubmit)="onSubmit()">
+    <p>
+      <mat-error *ngIf="form.invalid && form.hasError('isDupeCity')">
+        <strong>ERROR</strong>: A city with the same <i>name</i>, <i>lat</i>,
+        <i>lon</i> and <i>country</i> already exists.
+      </mat-error>
+    </p>
+    <!-- Name -->
+    <mat-form-field>
+      <mat-label>Name:</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        required
+        placeholder="Type a name"
+      />
+    </mat-form-field>
+    <mat-error *ngFor="let error of getErrors(form.get('name')!, 'Name')">
+      {{ error }}
+    </mat-error>
+    <!-- Lat -->
+    <mat-form-field>
+      <mat-label>Latitude:</mat-label>
+      <input
+        matInput
+        formControlName="lat"
+        required
+        placeholder="Insert latitude"
+      />
+    </mat-form-field>
+    <mat-error
+      *ngFor="
+        let error of getErrors(form.get('lat')!, 'Latitude', {
+          pattern:
+            'requires a positive or negative number with 0-4 decimal values'
+        })
+      "
+    >
+      {{ error }}
+    </mat-error>
+    <!-- Lon -->
+    <mat-form-field>
+      <mat-label>Longitude:</mat-label>
+      <input
+        matInput
+        formControlName="lon"
+        required
+        placeholder="Insert longitude"
+      />
+    </mat-form-field>
+    <mat-error
+      *ngFor="
+        let error of getErrors(form.get('lon')!, 'Longitude', {
+          pattern:
+            'requires a positive or negative number with 0-4 decimal values'
+        })
+      "
+    >
+      {{ error }}
+    </mat-error>
+    <!-- Country -->
+    <mat-form-field *ngIf="countries">
+      <mat-label>Select a Country ...</mat-label>
+      <mat-select id="countryId" formControlName="countryId">
+        <mat-option *ngFor="let country of countries" [value]="country.id">
+          {{ country.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-error
+      *ngFor="let error of getErrors(form.get('countryId')!, 'Country')"
+    >
+      {{ error }}
+    </mat-error>
 
-        <p>
-            <mat-error *ngIf="form.invalid && form.hasError('isDupeCity')">
-                <strong>ERROR</strong>:
-                A city with the same <i>name</i>, <i>lat</i>,
-                <i>lon</i> and <i>country</i> already exists.
-            </mat-error>
-        </p>
-        <!-- Name -->
-        <mat-form-field>
-            <mat-label>Name:</mat-label>
-            <input matInput formControlName="name" required placeholder="Type a name">
-        </mat-form-field>
-        <mat-error *ngFor="let error of getErrors(form.get('name')!,
-          'Name')">
-            {{error}}
-        </mat-error>
-        <!-- Lat -->
-        <mat-form-field>
-            <mat-label>Latitude:</mat-label>
-            <input matInput formControlName="lat" required placeholder="Insert latitude">
-        </mat-form-field>
-        <mat-error *ngFor="let error of getErrors(form.get('lat')!,
-      'Latitude',
-      {'pattern' : 'requires a positive or negative number with 0-4 decimal values'})">
-            {{error}}
-        </mat-error>
-        <!-- Lon -->
-        <mat-form-field>
-            <mat-label>Longitude:</mat-label>
-            <input matInput formControlName="lon" required placeholder="Insert longitude">
-        </mat-form-field>
-        <mat-error *ngFor="let error of getErrors(form.get('lon')!,
-        'Longitude',
-        {'pattern' : 'requires a positive or negative number with 0-4 decimal values'})">
-            {{error}}
-        </mat-error>
-        <!-- Country -->
-        <mat-form-field *ngIf="countries">
-            <mat-label>Select a Country ...</mat-label>
-            <mat-select id="countryId" formControlName="countryId">
-                <mat-option *ngFor="let country of countries" [value]="country.id">
-                    {{country.name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-error *ngFor="let error of getErrors(form.get('countryId')!,
-          'Country')">
-            {{error}}
-        </mat-error>
-
-        <div>
-            <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid " (click)="onSubmit()">
-                {{this.id ? "Save" : "Create"}}
-            </button>
-            <button mat-flat-button color="secondary" [routerLink]="['/cities']">
-                Cancel
-            </button>
-        </div>
+    <div>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="!form.valid"
+        (click)="onSubmit()"
+      >
+        {{ this.id ? "Save" : "Create" }}
+      </button>
+      <button mat-flat-button color="secondary" [routerLink]="['/cities']">
+        Cancel
+      </button>
     </div>
+  </div>
+</div>
+<!-- Form debug info panel -->
+<div class="info"
+>
+  <div class="info-header">Form Debug Info</div>
+  <div class="info-body">
+    <div class="info-label">Form Value:</div>
+    <div class="info-value">
+      {{ form.value | json }}
+    </div>
+    <hr />
+    <div class="info-label">Form Status:</div>
+    <div class="info-value">
+      {{ form.status | json }}
+    </div>
+  </div>
 </div>
