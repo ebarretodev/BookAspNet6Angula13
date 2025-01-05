@@ -5,9 +5,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { City } from 'src/app/models/city';
 import { Country } from 'src/app/models/country';
-import { Params } from 'src/app/models/params';
-import { ApiService } from 'src/app/services/api.service';
-import { environment } from 'src/environments/environment';
 import { BaseFormComponent } from '../../components/base-form.component';
 import { CityService } from '../cities/city.service';
 
@@ -37,7 +34,7 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private cityService: CityService,
-  ) { 
+  ) {
     super()
   }
 
@@ -84,24 +81,12 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
   }
 
   loadCountries() {
-    // fetch all the countries from the server
-    let url = environment.apiUrl + '/Countries';
-    let params: Params = {
-      pageEvent: {
-        pageIndex: 0,
-        pageSize: 9999
-      },
-      sortValues: {
-        sortColumn: "name"
-      }
-    }
-    
     this.cityService.getCountries(
       0,
       9999,
       "name",
       "asc",
-      null, 
+      null,
       null
     )
     .subscribe({
