@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Params } from 'src/app/models/params';
 import { Country } from 'src/app/models/country';
-import { ApiService } from 'src/app/services/api.service';
 import { debounceTime, delay, distinctUntilChanged, Subject } from 'rxjs';
+import { CountryService } from './country.service';
 
 @Component({
   selector: 'app-countries',
@@ -28,7 +28,9 @@ export class CountriesComponent implements AfterViewInit {
 
   filterTextChanged: Subject<string> = new Subject<string>()
 
-  constructor(private apiService: ApiService) { }
+  constructor(
+    private countriesService: CountryService
+  ) { }
 
   ngAfterViewInit(): void {
     this.loadData()
@@ -55,25 +57,14 @@ export class CountriesComponent implements AfterViewInit {
   }
 
   getData(event: PageEvent) {
-    this.paramsToSend = {
-      pageEvent: event,
-      sortValues: {
-        sortColumn: (this.sort) ? this.sort.active : this.defaultSortColumn,
-        sortOrder: (this.sort) ? (this.sort.direction as 'asc' | 'desc') : this.defaultSortOrder
-      }
-    }
-
-    if (this.filterQuery) {
-      this.paramsToSend = {
-        ...this.paramsToSend,
-        filtersValues: {
-          filterColumn: this.defaultFilterColumn,
-          filterQuery: this.filterQuery
-        }
-      }
-    }
-
-    this.apiService.getData('Countries', this.paramsToSend)
+    this.countriesService.getData(
+      event.pageIndex,
+      event.pageSize,
+      (this.sort) ? this.sort.active : this.defaultSortColumn,
+      (this.sort) ? this.sort.direction : this.defaultSortOrder,
+      (this.filterQuery) ? this.defaultFilterColumn : null,
+      (this.filterQuery) ? this.filterQuery : null
+    )
     .pipe(
       delay(0)
     )

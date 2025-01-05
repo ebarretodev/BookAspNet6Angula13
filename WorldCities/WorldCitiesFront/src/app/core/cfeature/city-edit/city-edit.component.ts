@@ -1,15 +1,15 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { debounceTime, map, switchMap } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { City } from 'src/app/models/city';
 import { Country } from 'src/app/models/country';
 import { Params } from 'src/app/models/params';
 import { ApiService } from 'src/app/services/api.service';
 import { environment } from 'src/environments/environment';
 import { BaseFormComponent } from '../../components/base-form.component';
+import { CityService } from '../cities/city.service';
 
 @Component({
   selector: 'app-city-edit',
@@ -36,8 +36,7 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService,
-    private http: HttpClient
+    private cityService: CityService,
   ) { 
     super()
   }
@@ -56,7 +55,6 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
   }
 
   loadData() {
-
     //load countries
     this.loadCountries();
     // retrieve the ID from the 'id' parameter
@@ -66,7 +64,8 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
       // EDIT MODE:
 
       //Fetch from the server
-      this.apiService.getDataById('Cities', this.id).subscribe(
+      this.cityService.get(this.id)
+      .subscribe(
         {
           next: (response: City) => {
             this.city = response
@@ -97,7 +96,15 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
       }
     }
     
-    this.apiService.getData('Countries', params).subscribe({
+    this.cityService.getCountries(
+      0,
+      9999,
+      "name",
+      "asc",
+      null, 
+      null
+    )
+    .subscribe({
       next: (response: any) => this.countries = response.data,
       error: (error: any) => console.error(`Erro no fecth do Countries: ${error}`)
     })
@@ -113,8 +120,8 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
 
       if (this.id) {
         //EDIT MODE
-        this.apiService
-          .editDataById('Cities', city)
+        this.cityService
+          .put(city)
           .subscribe({
             next: (response) => {
               console.log(`Cidade ${city?.id} atualizada`)
@@ -123,8 +130,8 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
             error: (error) => console.error("Erro ao editar cidade: ", error)
           })
       } else {
-        this.apiService
-          .insertDataById('Cities', city)
+        this.cityService
+          .post(city)
           .subscribe({
             next: (response) => {
               console.log(`Cidade ${response.id} criada com sucesso`)
@@ -147,9 +154,8 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
       city.lon = +this.form.controls['lon'].value;
       city.countryId = +this.form.controls['countryId'].value;
 
-      var url = environment.apiUrl + '/Cities/IsDupeCity';
-      return this.http.post<boolean>(url, city).pipe(map(result => {
-
+      return this.cityService.isDupeCity(city)
+      .pipe(map(result => {
         return (result ? { isDupeCity: true } : null);
       }));
     }

@@ -13,6 +13,8 @@ import { CountriesComponent } from './core/cfeature/countries/countries.componen
 import { ReactiveFormsModule } from '@angular/forms';
 import { CityEditComponent } from './core/cfeature/city-edit/city-edit.component';
 import { CountryEditComponent } from './core/cfeature/country-edit/country-edit.component';
+import { CityService } from './core/cfeature/cities/city.service';
+import { CountryService } from './core/cfeature/countries/country.service';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,10 @@ import { CountryEditComponent } from './core/cfeature/country-edit/country-edit.
     AngularMaterialModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    CityService,
+    CountryService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

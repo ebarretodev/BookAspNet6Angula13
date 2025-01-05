@@ -1,11 +1,11 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { Params } from 'src/app/models/params';
-import { ApiService } from 'src/app/services/api.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { City } from 'src/app/models/city';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { CityService } from './city.service';
 
 @Component({
   selector: 'app-cities',
@@ -31,7 +31,10 @@ export class CitiesComponent implements AfterViewInit {
 
   filterTextChanged: Subject<string> = new Subject<string>()
 
-  constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private cityService: CityService,
+    private cdr: ChangeDetectorRef
+  ) { }
  
   ngAfterViewInit(){
     this.loadData()
@@ -59,25 +62,15 @@ export class CitiesComponent implements AfterViewInit {
   }
 
   getData(event: PageEvent) {
-    this.paramsToSend = {
-      pageEvent: event,
-      sortValues: {
-        sortColumn: (this.sort) ? this.sort.active : this.defaultSortColumn,
-        sortOrder: (this.sort) ? (this.sort.direction as 'asc' | 'desc') : this.defaultSortOrder
-      }
-    }
-
-    if (this.filterQuery) {
-      this.paramsToSend = {
-        ...this.paramsToSend,
-        filtersValues: {
-          filterColumn: this.defaultFilterColumn,
-          filterQuery: this.filterQuery
-        }
-      }
-    }
-
-    this.apiService.getData('Cities', this.paramsToSend).subscribe({
+    this.cityService.getData(
+      event.pageIndex,
+      event.pageSize,
+      (this.sort) ? this.sort.active : this.defaultSortColumn,
+      (this.sort) ? this.sort.direction : this.defaultSortOrder,
+      (this.filterQuery) ? this.defaultFilterColumn : null,
+      (this.filterQuery) ? this.filterQuery : null
+    )
+    .subscribe({
       next: (response: any) => {
         this.paginator.length = response.totalCount
         this.paginator.pageIndex = response.pageIndex;
