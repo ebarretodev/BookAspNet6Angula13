@@ -7,6 +7,7 @@ import { City } from 'src/app/models/city';
 import { Country } from 'src/app/models/country';
 import { BaseFormComponent } from '../../components/base-form.component';
 import { CityService } from '../cities/city.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-city-edit',
@@ -29,6 +30,8 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
 
   // the countries array for the select
   countries?: Country[]
+
+  production = environment.production
 
   constructor(
     private activatedRoute: ActivatedRoute,
