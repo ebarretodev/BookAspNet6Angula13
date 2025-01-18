@@ -1,18 +1,19 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Params } from 'src/app/models/params';
 import { Country } from 'src/app/models/country';
-import { debounceTime, delay, distinctUntilChanged, Subject } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { CountryService } from './country.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-countries',
   templateUrl: './countries.component.html',
   styleUrls: ['./countries.component.scss']
 })
-export class CountriesComponent implements AfterViewInit {
+export class CountriesComponent implements AfterViewInit, OnInit, OnDestroy {
   public displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3', 'totCities']
   public countries!: MatTableDataSource<Country>
   defaultPageIndex: number = 0;
@@ -23,14 +24,33 @@ export class CountriesComponent implements AfterViewInit {
   filterQuery?: string;
   paramsToSend: Params = {}
 
+
+  private destroySubject = new Subject()
+  isLoggedIn: boolean = false
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   filterTextChanged: Subject<string> = new Subject<string>()
 
   constructor(
-    private countriesService: CountryService
-  ) { }
+    private countriesService: CountryService,
+    private authService: AuthService
+  ) {
+    this.authService.authStatus
+          .pipe(takeUntil(this.destroySubject))
+          .subscribe( result => {
+            this.isLoggedIn = result
+          })
+   }
+  ngOnDestroy(): void {
+    this.destroySubject.next(true)
+    this.destroySubject.complete()
+  }
+
+  ngOnInit(): void {
+    this.isLoggedIn = this.authService.isAuthenticated()
+  }
 
   ngAfterViewInit(): void {
     this.loadData()

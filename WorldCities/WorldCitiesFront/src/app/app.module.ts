@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavMenuComponent } from './core/components/nav-menu/nav-menu.component';
 import { HomeComponent } from './core/cfeature/home/home.component';
 import { CitiesComponent } from './core/cfeature/cities/cities.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AngularMaterialModule } from './angular-material.module';
 import { CountriesComponent } from './core/cfeature/countries/countries.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -15,6 +15,8 @@ import { CityEditComponent } from './core/cfeature/city-edit/city-edit.component
 import { CountryEditComponent } from './core/cfeature/country-edit/country-edit.component';
 import { CityService } from './core/cfeature/cities/city.service';
 import { CountryService } from './core/cfeature/countries/country.service';
+import { LoginComponent } from './core/cfeature/login/login.component';
+import { AuthInterceptor } from './core/cfeature/auth/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { CountryService } from './core/cfeature/countries/country.service';
     CitiesComponent,
     CountriesComponent,
     CityEditComponent,
-    CountryEditComponent
+    CountryEditComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -36,7 +39,12 @@ import { CountryService } from './core/cfeature/countries/country.service';
   ],
   providers: [
     CityService,
-    CountryService
+    CountryService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

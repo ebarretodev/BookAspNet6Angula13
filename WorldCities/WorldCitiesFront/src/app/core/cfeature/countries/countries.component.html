@@ -1,7 +1,7 @@
 <h1>Countries</h1>
 <p>Here's a list of countries: feel free to play with it.</p>
 <p *ngIf="!countries"><em>Loading...</em></p>
-<a mat-flat-button color="primary" class="btn-add" [routerLink]="['/country']">
+<a *ngIf="isLoggedIn" mat-flat-button color="primary" class="btn-add" [routerLink]="['/country']">
     Add a new Country
 </a>
 <mat-form-field [hidden]="!countries">
