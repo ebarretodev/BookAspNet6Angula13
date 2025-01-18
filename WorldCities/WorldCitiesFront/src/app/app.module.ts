@@ -17,6 +17,7 @@ import { CityService } from './core/cfeature/cities/city.service';
 import { CountryService } from './core/cfeature/countries/country.service';
 import { LoginComponent } from './core/cfeature/login/login.component';
 import { AuthInterceptor } from './core/cfeature/auth/auth.interceptor';
+import { RegisterComponent } from './core/cfeature/register/register.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { AuthInterceptor } from './core/cfeature/auth/auth.interceptor';
     CityEditComponent,
     CountryEditComponent,
     LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

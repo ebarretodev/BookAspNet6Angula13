@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 
 import { LoginResult } from './login-result';
 import { LoginRequest } from './login-request';
+import { RegisterRequest } from './register-request';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,18 @@ export class AuthService {
         }
       }))
   }
+
+  register(item: RegisterRequest): Observable<LoginResult>{
+    var url = environment.apiUrl + "/Account/Register"
+    return this.http.post<LoginResult>(url, item)
+      .pipe(tap(loginResult => {
+        if(loginResult.success && loginResult.token){
+          localStorage.setItem(this.tokenKey, loginResult.token)
+          this.setAuthStatus(true)
+        }
+      }))
+  }
+
   logout(){
     localStorage.removeItem(this.tokenKey)
     this.setAuthStatus(false)

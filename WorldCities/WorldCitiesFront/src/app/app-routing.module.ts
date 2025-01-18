@@ -7,6 +7,7 @@ import { CityEditComponent } from './core/cfeature/city-edit/city-edit.component
 import { CountryEditComponent } from './core/cfeature/country-edit/country-edit.component';
 import { LoginComponent } from './core/cfeature/login/login.component';
 import { AuthGuard } from './core/cfeature/auth/auth.guard';
+import { RegisterComponent } from './core/cfeature/register/register.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'country/:id', component: CountryEditComponent, canActivate: [AuthGuard] },
   { path: 'country', component: CountryEditComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 ];
 
 @NgModule({
