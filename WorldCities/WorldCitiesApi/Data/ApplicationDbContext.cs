@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WorldCitiesApi.Data.Models;
 
 namespace WorldCitiesApi.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : 
+        IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(): base()
         {
