@@ -18,6 +18,9 @@ import { CountryService } from './core/cfeature/countries/country.service';
 import { LoginComponent } from './core/cfeature/login/login.component';
 import { AuthInterceptor } from './core/cfeature/auth/auth.interceptor';
 import { RegisterComponent } from './core/cfeature/register/register.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOptionsToken } from 'angular-connection-service';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,14 @@ import { RegisterComponent } from './core/cfeature/register/register.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     AngularMaterialModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    ConnectionServiceModule
   ],
   providers: [
     CityService,
@@ -46,6 +56,12 @@ import { RegisterComponent } from './core/cfeature/register/register.component';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
+    },
+    {
+      provide: ConnectionServiceOptionsToken,
+      useValue: <ConnectionServiceOptions>{
+        heartbeatUrl: environment.apiUrl + '/heartbeat'
+      }
     }
   ],
   bootstrap: [AppComponent]
