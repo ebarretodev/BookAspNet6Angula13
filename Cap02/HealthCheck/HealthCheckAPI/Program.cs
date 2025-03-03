@@ -1,4 +1,5 @@
 using HealthCheckAPI;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,6 +44,13 @@ app.UseAuthorization();
 
 app.UseHealthChecks(new PathString("/api/health"),
     new CustomHealthCheckOptions());
+
+app.MapHub<HealthCheckHub>("/api/health-hub");
+
+app.MapGet("/api/broadcast/update", async(IHubContext<HealthCheckHub> hub) =>{
+    await hub.Clients.All.SendAsync("Update", "test");
+    return Results.Text("Update message sent");
+});
 
 app.MapControllers();
 
